@@ -30,17 +30,17 @@ func isExistingFile(filename string) bool {
 // manage.py file and ok will be true. If a manage.py file is not
 // found managePyFilename will contain the empty string and ok will
 // be false.
-func findManagePy(dir string) (managePyFilename string, ok bool) {
+func findManagePy(dir string) (managePyFilename string, projectDir string, ok bool) {
 	for dir != "/" {
 		filename := filepath.Join(dir, "manage.py")
 
 		if isExistingFile(filename) {
-			return filename, true
+			return filename, dir, true
 		} else {
 			dir = filepath.Dir(dir)
 		}
 	}
-	return "", false
+	return "", "", false
 }
 
 // Creates the arguments that should be passed to the python
@@ -77,9 +77,12 @@ func main() {
 	if err != nil {
 		os.Exit(128)
 	}
-	managePyFilename, ok := findManagePy(dir)
+	managePyFilename, projectDir, ok := findManagePy(dir)
 	if ok {
-		fmt.Println(managePyFilename)
+		err := os.Chdir(projectDir)
+		if err != nil {
+			panic(err)
+		}
 		executeManagePy(managePyFilename)
 	} else {
 		fmt.Fprintln(os.Stderr, "Not in a Django project.")
