@@ -43,12 +43,34 @@ func findManagePy(dir string) (managePyFilename string, projectDir string, ok bo
 	return "", "", false
 }
 
+// Applies command aliases. For example "run" is expanded
+// into "runserver".
+func applyAliases(cmd string) string {
+
+	aliasMap := map[string]string{
+		"r": "runserver",
+		"run": "runserver",
+		"m": "migrate",
+		"mm": "makemigrations",
+	}
+	alias := aliasMap[cmd]
+	if alias != "" {
+		return alias
+	} else {
+		return cmd
+	}
+}
+
 // Creates the arguments that should be passed to the python
 // executable.
 func createArgs(managePyFilename string) []string{
 	args := make([]string, len(os.Args))
 	copy(args, os.Args)
 	args[0] = managePyFilename
+
+	if(len(args)>1) {
+		args[1] = applyAliases(args[1])
+	}
 
 	return args
 }
