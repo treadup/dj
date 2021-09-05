@@ -79,7 +79,7 @@ func createArgs(managePyFilename string) []string{
 // in to this program on the command line.
 func executeManagePy(managePyFilename string) {
 	args := createArgs(managePyFilename)
-	cmd := exec.Command("python", args...)
+	cmd := exec.Command("python3", args...)
 
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
